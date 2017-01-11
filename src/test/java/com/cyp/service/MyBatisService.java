@@ -1,6 +1,5 @@
 package com.cyp.service;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -10,218 +9,108 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.cyp.pojo.User;
 
 public class MyBatisService {
-    // 根据Id查询用户信息，得到一条记录结果
-    @Test
-    public void findUserByIdTest() {
-        // mybatis的配置文件
-        String resource = "SqlMapConfig.xml";
-        InputStream inputStream = null;
-        SqlSession sqlSession = null;
-        try {
-            inputStream = Resources.getResourceAsStream(resource);
-            // 1.创建会话工场,传入mybatis的配置文件信息
-            SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder()
-                    .build(inputStream);
+	// 根据Id查询用户信息，得到一条记录结果
+	String resource = "SqlMapConfig.xml";
+	InputStream inputStream = null;
+	SqlSession sqlSession = null;
 
-            // 2.通过工厂得到SqlSession
-            sqlSession = sqlSessionFactory.openSession();
+	private Logger logger = Logger.getLogger(MyBatisService.class);
 
-            // 3.通过sqlSession操作数据库
-            // 第一个参数：映射文件中的statement的Id,等于namespace + "." + statement的id;
-            // 第二个参数:指定和映射文件中所匹配的parameterType类型的参数;
-            // sqlSession.selectOne结果是与映射文件所匹配的resultType类型的对象;
-            // selectOne：查询一条结果
-            User user = sqlSession.selectOne("test.findUserById", 1);
-            System.out.println(user.toString());
+	@Before
+	public void init() {
+		try {
+			logger.info("初始化开始");
+			inputStream = Resources.getResourceAsStream(resource);
+			logger.info("1.创建会话工场,传入mybatis的配置文件信息");
+			SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder()
+					.build(inputStream);
+			logger.info("2.通过工厂得到SqlSession");
+			sqlSession = sqlSessionFactory.openSession();
+			logger.info("初始化完成");
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
+	}
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (sqlSession != null) {
-                sqlSession.close();
-            }
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+	@After()
+	public void release() {
+		if (sqlSession != null) {
+			sqlSession.close();
+			logger.info("关闭Session");
+		}
+		if (inputStream != null) {
+			try {
+				inputStream.close();
+				logger.info("inputStream");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-    // 根据姓名模糊查询用户信息，得到一条或多条记录结果
-    @Test
-    public void findUserByNameTest() {
-        // mybatis的配置文件
-        String resource = "SqlMapConfig.xml";
-        InputStream inputStream = null;
-        SqlSession sqlSession = null;
-        try {
-            inputStream = Resources.getResourceAsStream(resource);
-            // 1.创建会话工场,传入mybatis的配置文件信息
-            SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder()
-                    .build(inputStream);
+	@Test
+	public void findUserByIdTest() {
+		User user = sqlSession.selectOne("test.findUserById", 1);
+		logger.info(user.toString());
+	}
 
-            // 2.通过工厂得到SqlSession
-            sqlSession = sqlSessionFactory.openSession();
+	// 根据姓名模糊查询用户信息，得到一条或多条记录结果
+	@Test
+	public void findUserByNameTest() {
 
-            // 3.通过sqlSession操作数据库
-            // 第一个参数：映射文件中的statement的Id,等于namespace + "." + statement的id;
-            // 第二个参数:指定和映射文件中所匹配的parameterType类型的参数;
-            // sqlSession.selectOne结果是与映射文件所匹配的resultType类型的对象;
-            // list中的user和resultType类型一致
-            List<User> list = sqlSession.selectList("test.findUserByName", "小");
-            System.out.println(list);
+		List<User> list = sqlSession.selectList("test.findUserByName", "小");
+		System.out.println(list);
+		logger.info(list);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (sqlSession != null) {
-                sqlSession.close();
-            }
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+	}
 
-    // 添加用户
-    @Test
-    public void insertUserTest() {
-        // mybatis的配置文件
-        String resource = "SqlMapConfig.xml";
-        InputStream inputStream = null;
-        SqlSession sqlSession = null;
-        try {
-            inputStream = Resources.getResourceAsStream(resource);
-            // 1.创建会话工场,传入mybatis的配置文件信息
-            SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder()
-                    .build(inputStream);
-            // 2.通过工厂得到SqlSession
-            sqlSession = sqlSessionFactory.openSession();
-            //插入用户的对象
-            User user = new User();
-            user.setUserName("小红");
-            user.setBirthday(new Date());
-            user.setSex("1");
-            user.setAddress("上海");
-            // 3.通过sqlSession操作数据库
-            // 第一个参数：映射文件中的statement的Id,等于namespace + "." + statement的id;
-            // 第二个参数:指定和映射文件中所匹配的parameterType类型的参数;
-            // sqlSession.selectOne结果是与映射文件所匹配的resultType类型的对象;
-            sqlSession.insert("test.insertUser", user);
-            //执行提交事务
-            sqlSession.commit();
-            
-            //项目中经常需要 获取新增的用户的主键
-            System.out.println(user.getId());
+	// 添加用户
+	@Test
+	public void insertUserTest() {
+		User user = new User();
+		user.setUserName("小红");
+		user.setBirthday(new Date());
+		user.setSex("1");
+		user.setAddress("上海");
+		sqlSession.insert("test.insertUser", user);
+		// 执行提交事务
+		logger.info("//执行提交事务");
+		sqlSession.commit();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (sqlSession != null) {
-                sqlSession.close();
-            }
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-    
-    // 根据Id删除用户
-        @Test
-        public void deleteUserTest() {
-            // mybatis的配置文件
-            String resource = "SqlMapConfig.xml";
-            InputStream inputStream = null;
-            SqlSession sqlSession = null;
-            try {
-                inputStream = Resources.getResourceAsStream(resource);
-                // 1.创建会话工场,传入mybatis的配置文件信息
-                SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder()
-                        .build(inputStream);
-                // 2.通过工厂得到SqlSession
-                sqlSession = sqlSessionFactory.openSession();
-                // 3.通过sqlSession操作数据库
-                // 第一个参数：映射文件中的statement的Id,等于namespace + "." + statement的id;
-                // 第二个参数:指定和映射文件中所匹配的parameterType类型的参数;
-                // sqlSession.selectOne结果是与映射文件所匹配的resultType类型的对象;
-                //传入Id，删除用户
-                sqlSession.delete("test.deleteUser", 7);
-                //执行提交事务
-                sqlSession.commit();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (sqlSession != null) {
-                    sqlSession.close();
-                }
-                if (inputStream != null) {
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        
-        // 根据Id更新用户信息
-        @Test
-        public void updateUserTest() {
-            // mybatis的配置文件
-            String resource = "SqlMapConfig.xml";
-            InputStream inputStream = null;
-            SqlSession sqlSession = null;
-            try {
-                inputStream = Resources.getResourceAsStream(resource);
-                // 1.创建会话工场,传入mybatis的配置文件信息
-                SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder()
-                        .build(inputStream);
-                // 2.通过工厂得到SqlSession
-                sqlSession = sqlSessionFactory.openSession();
-                //更新用户的信息
-                User user = new User();
-                user.setId(2);
-                user.setUserName("小黑");
-                user.setBirthday(new Date());
-                user.setSex("2");
-                user.setAddress("上海");
-                // 3.通过sqlSession操作数据库
-                // 第一个参数：映射文件中的statement的Id,等于namespace + "." + statement的id;
-                // 第二个参数:指定和映射文件中所匹配的parameterType类型的参数;
-                // sqlSession.selectOne结果是与映射文件所匹配的resultType类型的对象;
-                //更具Id更新用户
-                sqlSession.update("test.updateUser", user);
-                //执行提交事务
-                sqlSession.commit();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (sqlSession != null) {
-                    sqlSession.close();
-                }
-                if (inputStream != null) {
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
+		logger.info("//项目中经常需要 获取新增的用户的主键");
+		logger.info(user.getId());
+	}
+
+	// 根据Id删除用户
+	@Test
+	public void deleteUserTest() {
+		sqlSession.delete("test.deleteUser", 7);
+		logger.info("提交删除");
+		sqlSession.commit();
+	}
+
+	// 根据Id更新用户信息
+	@Test
+	public void updateUserTest() {
+
+		User user = new User();
+		user.setId(2);
+		user.setUserName("小黑");
+		user.setBirthday(new Date());
+		user.setSex("2");
+		user.setAddress("上海");
+
+		sqlSession.update("test.updateUser", user);
+		logger.info("//执行提交事务");
+		sqlSession.commit();
+
+	}
 }
