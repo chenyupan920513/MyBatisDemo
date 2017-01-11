@@ -20,6 +20,6 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	</environments>
 	<!-- 加载映射文件 -->
 	<mappers>
-		<mapper resource="user.xml" />
+		<mapper resource="com/cyp/mapping/user.xml" />
 	</mappers>
 </configuration>
