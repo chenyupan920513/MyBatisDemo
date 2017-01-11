@@ -32,8 +32,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String"> 
 			select uuid() </selectKey> insert into t_user (id,username,birthday,sex,address) 
 			values(#{id},#{username},#{birthday},#{sex},#{address}) -->
-		insert into t_user (username,birthday,sex,address)
-		values(#{username},#{birthday},#{sex},#{address})
+		insert into t_user (userName,birthday,sex,address)
+		values(#{userName},#{birthday},#{sex},#{address})
 	</insert>
 	<!-- 删除用户 根据ID删除用户,需要输入Id值 -->
 	<delete id="deleteUser" parameterType="java.lang.Integer">
@@ -41,9 +41,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</delete>
 	<!-- 更新用户 需要传入用户的Id和用户的更新信息 parameterType:指定User对象，包括Id和用户的更新信息,注意：Id是必须存在的 
 		#{id}:从输入的User对象中获取Id的属性值 -->
-	<update id="updateUser" parameterType="com.mybatis.entity.User">
+	<update id="updateUser" parameterType="com.cyp.pojo.User">
 		update t_user set
-		username=#{username},birthday=#{birthday},sex=#{sex},address=#{address}
+		userName=#{userName},birthday=#{birthday},sex=#{sex},address=#{address}
 		where id=#{id}
 	</update>
 
