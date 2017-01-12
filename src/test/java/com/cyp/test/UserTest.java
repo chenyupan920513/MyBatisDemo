@@ -1,4 +1,4 @@
-package com.cyp.service;
+package com.cyp.test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,13 +16,13 @@ import org.junit.Test;
 
 import com.cyp.pojo.User;
 
-public class MyBatisService {
+public class UserTest {
 	// 根据Id查询用户信息，得到一条记录结果
 	String resource = "SqlMapConfig.xml";
 	InputStream inputStream = null;
 	SqlSession sqlSession = null;
 
-	private Logger logger = Logger.getLogger(MyBatisService.class);
+	private Logger logger = Logger.getLogger(UserTest.class);
 
 	@Before
 	public void init() {
