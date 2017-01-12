@@ -50,4 +50,8 @@ public class User {
 		this.address = address;
 	}
 
+	@Override
+	public String toString() {
+		return super.toString()+"[id:"+id+",userName:"+userName+",birthday:"+birthday+",sex:"+sex+",address:"+address+"]";
+	}
 }
