@@ -2,44 +2,16 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间,作用就是对sql进行分类化的管理,理解为sql隔离 注意:使用mapper代理开发时，namespace有特殊作用 -->
 <mapper namespace="test">
 	<select id="findUserById" parameterType="int" resultType="com.cyp.pojo.User">
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> dev
 		select
 		* from t_user where id=#{id}
 	</select>
 	<select id="findUserByName" parameterType="java.lang.String"
 		resultType="com.cyp.pojo.User">
 		select * from t_user where username LIKE '%${value}%'
-<<<<<<< HEAD
-=======
 	</select>
-=======
-		select * from t_user where id=#{id}
-	</select>
-	<select id="findUserByName" parameterType="java.lang.String" resultType="com.cyp.pojo.User">
-		select * from t_user where username like '%${value}%'
-	</select>
->>>>>>> dev
-	<update id="updateUser" parameterType="com.cyp.pojo.User">
-		update t_user set
-			username=#{userName},
-			birthday=#{birthday},
-			sex=#{sex},
-			address=#{address}
-		where id =#{id}
-	</update>
-	<delete id="deleteUser"  parameterType="int">
-	  delete from t_user where id = #{id}
-	</delete>
-	
-<<<<<<< HEAD
-=======
->>>>>>> 2b9a019acf541f1e3b478d2f8caf2d2ca19906a1
->>>>>>> dev
 	<insert id="insertUser" parameterType="com.cyp.pojo.User">
 		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
 			select
@@ -47,9 +19,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</selectKey>
 		insert into t_user (username,birthday,sex,address)
 		values(#{userName},#{birthday},#{sex},#{address})
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 	</insert>
 	<!-- 删除用户 根据ID删除用户,需要输入Id值 -->
 	<delete id="deleteUser" parameterType="java.lang.Integer">
@@ -62,8 +31,4 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where id=#{id}
 	</update>
 
-=======
-		</insert>
->>>>>>> 2b9a019acf541f1e3b478d2f8caf2d2ca19906a1
->>>>>>> dev
 </mapper>
